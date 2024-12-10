@@ -9,21 +9,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
     unzip \
+    chromium \
+    chromium-driver \
     && rm -rf /var/lib/apt/lists/*
-
-# 安装 Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
-
-# 安装固定版本的 ChromeDriver
-RUN CHROMEDRIVER_VERSION=119.0.6045.105 \
-    && wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
-    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
-    && rm /tmp/chromedriver.zip \
-    && chmod +x /usr/local/bin/chromedriver
 
 # 复制项目文件
 COPY . .
@@ -38,7 +26,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV PYTHONPATH=/app
 ENV HOST=0.0.0.0
 ENV PORT=8000
-ENV CHROME_DRIVER_PATH=/usr/local/bin/chromedriver
+ENV CHROME_DRIVER_PATH=/usr/bin/chromedriver
+ENV CHROME_PATH=/usr/bin/chromium
 
 # 暴露端口
 EXPOSE 8000
